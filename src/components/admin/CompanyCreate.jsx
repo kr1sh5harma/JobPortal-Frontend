@@ -4,8 +4,7 @@ import { Label } from '../ui/label'
 import { Input } from '../ui/input'
 import { Button } from '../ui/button'
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
-import { COMPANY_API_END_POINT } from '@/utils/constant'
+import { COMPANY_API_END_POINT, apiClient } from '@/utils/constant'
 import { toast } from 'sonner'
 import { useDispatch } from 'react-redux'
 import { setSingleCompany } from '@/redux/companySlice'
@@ -14,22 +13,21 @@ const CompanyCreate = () => {
     const navigate = useNavigate();
     const dispath = useDispatch();
     const [companyName, setCompanyName] = useState();
-    const registerNewCompany = async() => {
-        try{
-            const res = await axios.post(`${COMPANY_API_END_POINT}/register`, {companyName}, {
-                headers:{
+    const registerNewCompany = async () => {
+        try {
+            const res = await apiClient.post(`${COMPANY_API_END_POINT}/register`, { companyName }, {
+                headers: {
                     'Content-Type': 'application/json'
-                },
-                withCredentials: true
+                }
             });
-            if(res?.data?.success){
+            if (res?.data?.success) {
                 dispath(setSingleCompany(res?.data?.company));
                 toast.success(res.data.message);
                 const companyId = res?.data?.company?._id;
                 navigate(`/admin/companies/${companyId}`);
             }
         }
-        catch(error){
+        catch (error) {
             console.log(error);
         }
     }
@@ -46,7 +44,7 @@ const CompanyCreate = () => {
                     type='text'
                     className='my-2'
                     placeholder="Create your company name"
-                    onChange={(e)=>setCompanyName(e.target.value)}
+                    onChange={(e) => setCompanyName(e.target.value)}
                 />
                 <div className='flex items-center gap-2 my-10'>
                     <Button onClick={registerNewCompany}>Continue</Button>

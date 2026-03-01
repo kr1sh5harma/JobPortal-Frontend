@@ -5,9 +5,9 @@ import { Button } from '../ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 import { LogOut, User2 } from 'lucide-react'
 import { useDispatch, useSelector } from 'react-redux'
-import axios from 'axios'
-import { USER_API_END_POINT } from '@/utils/constant'
+import { USER_API_END_POINT, apiClient } from '@/utils/constant'
 import { setUser } from '@/redux/authSlice'
+import { toast } from 'sonner'
 
 const Navbar = () => {
     const { user } = useSelector(store => store.auth);
@@ -16,8 +16,9 @@ const Navbar = () => {
     const navigate = useNavigate();
     const logoutHandler = async () => {
         try {
-            const res = await axios.get(`${USER_API_END_POINT}/logout`, { withCredentials: true });
+            const res = await apiClient.get(`${USER_API_END_POINT}/logout`);
             if (res.data.success) {
+                localStorage.removeItem('token');
                 dispath(setUser(null));
                 navigate('/');
                 toast.success(res.data.message);
@@ -86,7 +87,7 @@ const Navbar = () => {
                                                         <User2 />
                                                         <Button variant="link"> <Link to='/profile'>View Profile</Link></Button>
                                                     </div>
-                                                ) 
+                                                )
                                             }
 
                                             <div className='flex w-fit items-center gap-2 cursor-pointer'>
