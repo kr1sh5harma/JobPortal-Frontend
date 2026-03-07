@@ -1,60 +1,81 @@
 import React, { useEffect, useState } from 'react'
-import { RadioGroup, RadioGroupItem } from './ui/radio-group'
-import { Label } from './ui/label'
 import { useDispatch } from 'react-redux'
 import { setSearchedQuery } from '@/redux/jobSlice'
+import { SlidersHorizontal } from 'lucide-react'
 
 const filterData = [
     {
-        filterType: "Location",
-        array: ["Delhi NCR", "Bangalore", "Hyderabad", "Chennai", "Mumbai"]
+        type: 'Location',
+        options: ['Delhi NCR', 'Bangalore', 'Hyderabad', 'Chennai', 'Mumbai'],
     },
     {
-        filterType: "Industry",
-        array: ["Frontend Developer", "Backend Developer", "Full Stack Developer", "DevOps Engineer"]
+        type: 'Industry',
+        options: ['Frontend Developer', 'Backend Developer', 'Full Stack Developer', 'DevOps Engineer'],
     },
     {
-        filterType: "Salary",
-        array: ["<5 LPA", "5-10 LPA", "10-15 LPA", "15-20 LPA", "20+ LPA"]
-    }
+        type: 'Salary',
+        options: ['0-5 LPA', '5-10 LPA', '10-15 LPA', '15-20 LPA', '20+ LPA'],
+    },
 ]
 
 const FilterCard = () => {
-    const [selectedValue, setSelectedValue] = useState('');
-    const dispath = useDispatch();
+    const [selectedValue, setSelectedValue] = useState('')
+    const dispatch = useDispatch()
+
     const changeHandler = (value) => {
-        setSelectedValue(value);
+        setSelectedValue(value)
     }
 
-    useEffect(()=>{
-        dispath(setSearchedQuery(selectedValue));
-    },[selectedValue])
+    useEffect(() => {
+        dispatch(setSearchedQuery(selectedValue))
+    }, [selectedValue])
 
     return (
-        <div className='w-full bg-white p-3 rounded-md'>
-            <h1 className='font-bold text-lg'>Filter Jobs</h1>
-            <hr className='mt-3' />
-            <RadioGroup value={selectedValue} onValueChange={changeHandler}>
-                {
-                    filterData.map((data, index) => (
-                        <div>
-                            <h1 className='font-bold text-lg'>{data.filterType}</h1>
-                            {
-                                data.array.map((item, idx) => {
-                                    const itemId = `id${index}-${idx}`
-                                    return (
-                                        <div className='flex items-center space-x-2 my-2 '>
-                                            <RadioGroupItem value={item} id={itemId} />
-                                            <Label htmlFor={itemId}>{item}</Label>
-                                        </div>
-                                )
+        <div className="glass rounded-xl p-5 sticky top-20">
+            <div className="flex items-center gap-2 mb-5">
+                <SlidersHorizontal className="w-4 h-4 text-violet-400" />
+                <h2 className="font-bold text-base">Filter Jobs</h2>
+            </div>
+            <div className="w-full h-px bg-gradient-to-r from-violet-500/30 to-transparent mb-5" />
 
-                                })
-                            }
-                        </div>
-                    ))
-                }
-            </RadioGroup>
+            {filterData.map((section) => (
+                <div key={section.type} className="mb-5 last:mb-0">
+                    <h3 className="font-semibold text-sm text-violet-300 mb-3">{section.type}</h3>
+                    <div className="space-y-2">
+                        {section.options.map((option) => {
+                            const isSelected = selectedValue === option
+                            return (
+                                <label
+                                    key={option}
+                                    className={`flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer text-sm transition-all duration-200 ${isSelected
+                                            ? 'bg-violet-500/15 text-violet-300 border border-violet-500/20'
+                                            : 'text-muted-foreground hover:bg-violet-500/5 hover:text-foreground border border-transparent'
+                                        }`}
+                                >
+                                    <input
+                                        type="radio"
+                                        name="filter"
+                                        value={option}
+                                        checked={isSelected}
+                                        onChange={() => changeHandler(option)}
+                                        className="accent-violet-500 w-3.5 h-3.5"
+                                    />
+                                    {option}
+                                </label>
+                            )
+                        })}
+                    </div>
+                </div>
+            ))}
+
+            {selectedValue && (
+                <button
+                    onClick={() => { setSelectedValue(''); dispatch(setSearchedQuery('')) }}
+                    className="cursor-pointer w-full mt-4 py-2 px-3 text-sm text-muted-foreground hover:text-red-400 border border-violet-500/10 rounded-lg hover:bg-red-500/5 transition-all"
+                >
+                    Clear Filter
+                </button>
+            )}
         </div>
     )
 }

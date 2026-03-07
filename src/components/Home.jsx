@@ -8,27 +8,33 @@ import useGetAllJobs from '@/hooks/useGetAllJobs'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { Toaster } from 'sonner'
+
 const Home = () => {
-  useGetAllJobs();
-  const { user } = useSelector(store => store.auth || {});
-  const navigate = useNavigate();
+  useGetAllJobs()
+  const { user } = useSelector(store => store.auth || {})
+  const navigate = useNavigate()
+
   useEffect(() => {
     if (user?.role === 'recruiter') {
-      navigate('/admin/companies');
+      navigate('/admin/companies')
     }
   }, [])
+
   return (
     <motion.div
-      initial={{ opacity: 0, x: 100 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -100 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
+      className="min-h-screen bg-background"
     >
       <Navbar />
       <HeroSection />
       <CategoryCarousel />
       <LatestJobs />
       <Footer />
+      <Toaster theme="dark" richColors position="bottom-right" />
     </motion.div>
   )
 }
